@@ -2,6 +2,9 @@
 
 A self-hosted webhook observability workbench. Captures inbound HTTP calls from Stripe, Shopify, GitHub, Meta and any other source, streams them to a live three-pane inspector, and lets you replay or forward any event to a local server with a single click.
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
+
 ---
 
 ## Why
@@ -18,6 +21,10 @@ External webhook deliveries are a black box. When a payment fails at 2 AM you ha
 - **Three-pane workbench** — feed list / request inspector / delivery terminal, all visible at once
 - **Full request capture** — method, status, headers, query params, raw body, payload size, exact millisecond timestamp
 - **JSON inspector** — syntax highlight, line numbers, filter-by-key search, minimap for long payloads, raw / formatted toggle, one-click copy
+- **Pagination** — paginated feed list (25, 50, 100 items per page) with instant switching
+- **Export** — single event JSON download and complete event log batch export
+- **Dark / Light mode** — theme switcher with persistent storage across sessions
+- **In-App Documentation** — `/docs` interactive technical guide with pure inline SVG architecture and layout diagrams (zero PNG dependency)
 - **Replay engine** — forward any stored event to any target URL, captures response status, body and headers
 - **Attempt history** — every dispatch attempt logged with status code, latency and timestamp
 - **Auto-forward** — optionally pipe all inbound events straight to a local server in real time
@@ -51,7 +58,7 @@ External webhook deliveries are a black box. When a payment fails at 2 AM you ha
 ┌─────────────────────────────────────────────────────────────┐
 │  apps/web  (Vue 3 + Vite, port 5173 in dev)                 │
 │                                                             │
-│  FeedList ──▶ Inspector ──▶ DeliveryTerminal                │
+│  FeedList ──▶ Inspector ──▶ DeliveryTerminal ──▶ /docs      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -65,8 +72,8 @@ External webhook deliveries are a black box. When a payment fails at 2 AM you ha
 | Backend | Node.js 26 + Express | Native `node:sqlite`, high I/O throughput |
 | Database | `node:sqlite` (WAL) | Zero-install, ACID, embedded — no daemon required |
 | Real-time | Server-Sent Events | Unidirectional, reconnects automatically, works through proxies |
-| Frontend | Vue 3 `<script setup>` | Composition API, fine-grained reactivity |
-| Styling | Tailwind CSS + JetBrains Mono | Dark workbench aesthetic, monospace data density |
+| Frontend | Vue 3 + Vue Router | Composition API, client-side routing (`/` and `/docs`) |
+| Styling | Tailwind CSS + JetBrains Mono | Dark & light workbench themes, monospace density |
 | Build | Vite + vue-tsc | Sub-2s production builds, strict type checking |
 | Monorepo | npm workspaces | `packages/shared-types` shared between API and web |
 
@@ -76,6 +83,11 @@ External webhook deliveries are a black box. When a payment fails at 2 AM you ha
 
 ```
 AuditHook/
+├── Dockerfile                 Multi-stage Node 26 alpine container
+├── docker-compose.yml         1-command self-hosted stack
+├── railway.toml               Railway 1-click full-stack config
+├── fly.toml                   Fly.io production edge deployment
+├── vercel.json                Vercel frontend host configuration
 ├── apps/
 │   ├── api/                   Express API server
 │   │   └── src/
@@ -91,14 +103,19 @@ AuditHook/
 │   │       └── server.ts
 │   └── web/                   Vue 3 + Vite frontend
 │       └── src/
+│           ├── router/        Vue Router (/ and /docs)
+│           ├── pages/
+│           │   ├── WorkbenchPage.vue
+│           │   └── DocsPage.vue   Pure SVG technical documentation
 │           ├── composables/
-│           │   └── useTelemetry.ts  SSE connection, reactive state
+│           │   ├── useTelemetry.ts  SSE connection, reactive state
+│           │   └── useTheme.ts      Dark/light mode state manager
 │           └── components/
 │               ├── AuditHookLogo.vue
 │               ├── HeaderBar.vue
-│               ├── FeedList.vue
-│               ├── Inspector.vue
-│               ├── JsonView.vue      Syntax highlight + search + minimap
+│               ├── FeedList.vue     Paginated request list
+│               ├── Inspector.vue    Headers & JSON inspector + Export
+│               ├── JsonView.vue     Syntax highlight + search + minimap
 │               ├── DeliveryTerminal.vue
 │               └── NewEndpointModal.vue
 ├── packages/
@@ -109,13 +126,13 @@ AuditHook/
 
 ---
 
-## Quickstart
+## Quickstart (Local Development)
 
 **Requirements:** Node.js ≥ 26, npm ≥ 10
 
 ```bash
-git clone https://github.com/your-handle/audithook
-cd audithook
+git clone https://github.com/needtobreathe/AuditHook.git
+cd AuditHook
 npm install
 npm run build
 ```
@@ -134,6 +151,48 @@ Open `http://localhost:5173`, then fire test events:
 
 ```bash
 npm run emit
+```
+
+To view the in-app documentation and architectural diagrams, navigate to `http://localhost:5173/docs` or click the **Docs** button in the header bar.
+
+---
+
+## Deployment Options
+
+### 1. Docker & Docker Compose (Self-Hosted)
+
+Run AuditHook with persistent SQLite volume mounting:
+
+```bash
+docker compose up -d
+```
+
+The web dashboard and ingestion engine will be available immediately at `http://localhost:4000`. Data is stored persistently in `./data/audithook.sqlite`.
+
+### 2. Railway (1-Click Full-Stack)
+
+AuditHook includes a native `railway.toml`.
+1. Click the **Deploy on Railway** button above or link your GitHub repo in Railway.
+2. Railway detects `Dockerfile` and builds both backend and frontend.
+3. Attach a persistent volume to `/app/data`.
+
+### 3. Fly.io (Production Edge)
+
+Deploy to Fly.io using the preconfigured `fly.toml`:
+
+```bash
+fly launch --copy-config
+fly deploy
+```
+
+Fly mounts a persistent volume `audithook_data` at `/app/data` to preserve your SQLite database across restarts.
+
+### 4. Vercel (Frontend Client Host)
+
+AuditHook includes `vercel.json` configured for Vite SPA routing and backend proxying:
+
+```bash
+vercel --prod
 ```
 
 ---

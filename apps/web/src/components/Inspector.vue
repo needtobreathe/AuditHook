@@ -15,23 +15,23 @@ const props = defineProps<{
   event: WebhookEvent | null;
 }>();
 
-const showHeaders = ref(true);
 const curlCopied = ref(false);
+const showHeaders = ref(true);
 const headerSearch = ref('');
 
 function getMethodBadgeClass(method: HttpMethod) {
   switch (method) {
     case 'POST':
-      return 'text-emerald-400 bg-emerald-950/60 border border-emerald-800/60';
+      return 'text-emerald-500 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800/60';
     case 'GET':
-      return 'text-sky-400 bg-sky-950/60 border border-sky-800/60';
+      return 'text-sky-500 dark:text-sky-400 bg-sky-100 dark:bg-sky-950/60 border border-sky-300 dark:border-sky-800/60';
     case 'PUT':
     case 'PATCH':
-      return 'text-amber-400 bg-amber-950/60 border border-amber-800/60';
+      return 'text-amber-500 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800/60';
     case 'DELETE':
-      return 'text-rose-400 bg-rose-950/60 border border-rose-800/60';
+      return 'text-rose-500 dark:text-rose-400 bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800/60';
     default:
-      return 'text-slate-300 bg-slate-800 border border-slate-700';
+      return 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800';
   }
 }
 
@@ -79,31 +79,32 @@ function exportJson() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `webhook-${props.event.id}.json`;
+  const originTag = props.event.sourceOrigin ? `${props.event.sourceOrigin.toLowerCase()}-` : '';
+  a.download = `audithook-${originTag}${props.event.id}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
 </script>
 
 <template>
-  <main class="flex-1 h-[calc(100vh-3.5rem)] flex flex-col bg-slate-950 overflow-hidden select-none font-mono text-xs">
+  <main class="flex-1 h-[calc(100vh-3.5rem)] flex flex-col bg-zinc-950 dark:bg-zinc-950 light:bg-white overflow-hidden select-none font-mono text-xs">
     <div v-if="!event" class="flex-1 flex flex-col items-center justify-center text-slate-500 font-sans">
-      <Database class="w-10 h-10 stroke-[1.2] text-slate-700 mb-2" />
-      <p class="text-xs font-medium text-slate-400">Select a request to inspect</p>
+      <Database class="w-10 h-10 stroke-[1.2] text-slate-600 dark:text-slate-700 light:text-slate-300 mb-2" />
+      <p class="text-xs font-medium text-slate-400 dark:text-slate-400 light:text-slate-600">Select a request to inspect</p>
     </div>
 
     <template v-else>
-      <div class="p-3 border-b border-slate-800/80 bg-slate-900/40 flex items-center justify-between">
+      <div class="p-3 border-b border-slate-600/80 dark:border-slate-600/80 light:border-slate-300 bg-zinc-900/60 dark:bg-zinc-900/60 light:bg-slate-100 flex items-center justify-between">
         <div class="flex items-center space-x-2.5">
           <span :class="['px-1.5 py-0.5 rounded text-xs font-bold', getMethodBadgeClass(event.method)]">
             {{ event.method }}
           </span>
-          <span class="text-xs text-slate-200 font-semibold select-text">
+          <span class="text-xs text-slate-200 dark:text-slate-200 light:text-slate-900 font-semibold select-text">
             {{ event.path }}
           </span>
           <span
             v-if="event.sourceOrigin"
-            class="text-[10px] px-1.5 py-0.2 rounded bg-slate-900 text-slate-300 border border-slate-800"
+            class="text-[10px] px-1.5 py-0.2 rounded bg-slate-900 dark:bg-slate-900 light:bg-slate-200 text-slate-300 dark:text-slate-300 light:text-slate-800 border border-slate-800 dark:border-slate-800 light:border-slate-300"
           >
             {{ event.sourceOrigin }}
           </span>
@@ -112,45 +113,46 @@ function exportJson() {
         <div class="flex items-center space-x-1.5">
           <button
             @click="copyCurl"
-            class="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition flex items-center space-x-1 text-xs"
+            class="px-2 py-1 rounded bg-slate-900 dark:bg-slate-900 light:bg-white hover:bg-slate-800 dark:hover:bg-slate-800 light:hover:bg-slate-200 text-slate-300 dark:text-slate-300 light:text-slate-800 border border-slate-800 dark:border-slate-800 light:border-slate-300 transition flex items-center space-x-1 text-xs"
           >
             <Check v-if="curlCopied" class="w-3 h-3 text-emerald-400" />
-            <Terminal v-else class="w-3 h-3 text-slate-400" />
+            <Terminal v-else class="w-3 h-3 text-slate-400 dark:text-slate-400 light:text-slate-600" />
             <span>{{ curlCopied ? 'cURL Copied' : 'cURL' }}</span>
           </button>
 
           <button
             @click="exportJson"
-            class="p-1 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800 transition"
+            class="px-2 py-1 rounded bg-slate-900 dark:bg-slate-900 light:bg-white hover:bg-slate-800 dark:hover:bg-slate-800 light:hover:bg-slate-200 text-slate-300 dark:text-slate-300 light:text-slate-800 border border-slate-800 dark:border-slate-800 light:border-slate-300 transition flex items-center space-x-1 text-xs"
             title="Download JSON"
           >
-            <Download class="w-3.5 h-3.5" />
+            <Download class="w-3 h-3 text-emerald-400" />
+            <span>Export JSON</span>
           </button>
         </div>
       </div>
 
-      <div class="px-3 py-1.5 bg-slate-900/20 border-b border-slate-800/80 flex items-center space-x-6 text-[11px] text-slate-500">
+      <div class="px-3 py-1.5 bg-slate-900/20 dark:bg-slate-900/20 light:bg-slate-50 border-b border-slate-600/80 dark:border-slate-600/80 light:border-slate-300 flex items-center space-x-6 text-[11px] text-slate-500 dark:text-slate-500 light:text-slate-600">
         <div>
           <span>ID:</span>
-          <span class="ml-1 text-slate-400 select-text">{{ event.id }}</span>
+          <span class="ml-1 text-slate-400 dark:text-slate-400 light:text-slate-700 select-text">{{ event.id }}</span>
         </div>
         <div>
           <span>IP:</span>
-          <span class="ml-1 text-slate-400 select-text">{{ event.ip }}</span>
+          <span class="ml-1 text-slate-400 dark:text-slate-400 light:text-slate-700 select-text">{{ event.ip }}</span>
         </div>
         <div>
           <span>Time:</span>
-          <span class="ml-1 text-slate-400 select-text">{{ new Date(event.receivedAt).toISOString() }}</span>
+          <span class="ml-1 text-slate-400 dark:text-slate-400 light:text-slate-700 select-text">{{ new Date(event.receivedAt).toISOString() }}</span>
         </div>
       </div>
 
       <div class="flex-1 flex flex-col overflow-hidden">
-        <div class="border-b border-slate-800/80 bg-slate-900/30">
+        <div class="border-b border-slate-600/80 dark:border-slate-600/80 light:border-slate-300 bg-slate-900/30 dark:bg-slate-900/30 light:bg-slate-100">
           <div
             @click="showHeaders = !showHeaders"
-            class="px-3 py-1.5 flex items-center justify-between cursor-pointer hover:bg-slate-900/50"
+            class="px-3 py-1.5 flex items-center justify-between cursor-pointer hover:bg-slate-900/50 dark:hover:bg-slate-900/50 light:hover:bg-slate-200"
           >
-            <div class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 uppercase">
+            <div class="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-400 dark:text-slate-400 light:text-slate-600 uppercase">
               <ChevronDown v-if="showHeaders" class="w-3 h-3 text-slate-500" />
               <ChevronRight v-else class="w-3 h-3 text-slate-500" />
               <span>Headers ({{ Object.keys(event.headers || {}).length }})</span>
@@ -161,35 +163,35 @@ function exportJson() {
                 v-model="headerSearch"
                 type="text"
                 placeholder="Filter headers..."
-                class="bg-slate-900 border border-slate-800 rounded px-2 py-0.5 text-[10px] text-slate-300 placeholder-slate-600 focus:outline-none w-48"
+                class="bg-slate-900 dark:bg-slate-900 light:bg-white border border-slate-800 dark:border-slate-800 light:border-slate-300 rounded px-2 py-0.5 text-[10px] text-slate-300 dark:text-slate-300 light:text-slate-900 placeholder-slate-500 focus:outline-none w-48"
               />
             </div>
           </div>
 
-          <div v-if="showHeaders" class="max-h-48 overflow-y-auto border-t border-slate-800/80 divide-y divide-slate-850 bg-slate-950/60">
+          <div v-if="showHeaders" class="max-h-48 overflow-y-auto border-t border-slate-600/70 dark:border-slate-600/70 light:border-slate-300 divide-y divide-slate-850 dark:divide-slate-850 light:divide-slate-200 bg-zinc-950/60 dark:bg-zinc-950/60 light:bg-white">
             <div
               v-for="[key, val] in headerEntries"
               :key="key"
-              class="px-3 py-1 flex items-center justify-between text-[11px] hover:bg-slate-900/40"
+              class="px-3 py-1 flex items-center justify-between text-[11px] hover:bg-zinc-900/60 dark:hover:bg-zinc-900/60 light:hover:bg-slate-50"
             >
-              <span class="text-indigo-400 font-medium w-1/3 truncate select-text">{{ key }}</span>
-              <span class="text-slate-300 w-2/3 truncate select-text pl-4">{{ val }}</span>
+              <span class="text-indigo-400 dark:text-indigo-400 light:text-indigo-600 font-medium w-1/3 truncate select-text">{{ key }}</span>
+              <span class="text-slate-300 dark:text-slate-300 light:text-slate-700 w-2/3 truncate select-text pl-4">{{ val }}</span>
             </div>
           </div>
         </div>
 
-        <div v-if="event.query && Object.keys(event.query).length > 0" class="border-b border-slate-800/80 bg-slate-900/20 px-3 py-1.5">
-          <div class="text-[11px] font-semibold text-slate-400 uppercase mb-1">Query Parameters</div>
+        <div v-if="event.query && Object.keys(event.query).length > 0" class="border-b border-slate-600/80 dark:border-slate-600/80 light:border-slate-300 bg-slate-900/20 dark:bg-slate-900/20 light:bg-slate-50 px-3 py-1.5">
+          <div class="text-[11px] font-semibold text-slate-400 dark:text-slate-400 light:text-slate-600 uppercase mb-1">Query Parameters</div>
           <div class="space-y-0.5">
             <div v-for="[qk, qv] in Object.entries(event.query)" :key="qk" class="flex text-[11px]">
-              <span class="text-sky-400 font-medium w-1/4 select-text">{{ qk }}</span>
-              <span class="text-slate-300 w-3/4 select-text">{{ qv }}</span>
+              <span class="text-sky-400 dark:text-sky-400 light:text-sky-600 font-medium w-1/4 select-text">{{ qk }}</span>
+              <span class="text-slate-300 dark:text-slate-300 light:text-slate-700 w-3/4 select-text">{{ qv }}</span>
             </div>
           </div>
         </div>
 
         <div class="flex-1 overflow-hidden flex flex-col p-2">
-          <div class="text-[11px] font-semibold text-slate-400 uppercase px-1 py-1 flex items-center justify-between">
+          <div class="text-[11px] font-semibold text-slate-400 dark:text-slate-400 light:text-slate-600 uppercase px-1 py-1 flex items-center justify-between">
             <span>Payload</span>
           </div>
           <div class="flex-1 overflow-hidden">

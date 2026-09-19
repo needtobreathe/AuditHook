@@ -53,13 +53,13 @@ function highlightLine(line: string, isMatch: boolean): string {
   escaped = escaped.replace(
     /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
     (match) => {
-      let cls = 'text-purple-400';
+      let cls = 'text-purple-400 dark:text-purple-400 light:text-purple-600';
       if (/^"/.test(match)) {
-        cls = /:$/.test(match) ? 'text-sky-300 font-medium' : 'text-emerald-300';
+        cls = /:$/.test(match) ? 'text-sky-400 dark:text-sky-300 light:text-sky-600 font-medium' : 'text-emerald-500 dark:text-emerald-300 light:text-emerald-600';
       } else if (/true|false/.test(match)) {
-        cls = 'text-amber-400 font-medium';
+        cls = 'text-amber-500 dark:text-amber-400 light:text-amber-600 font-medium';
       } else if (/null/.test(match)) {
-        cls = 'text-rose-400 italic';
+        cls = 'text-rose-500 dark:text-rose-400 light:text-rose-600 italic';
       }
       return `<span class="${cls}">${match}</span>`;
     }
@@ -69,7 +69,7 @@ function highlightLine(line: string, isMatch: boolean): string {
     const q = escapeHtml(searchQuery.value);
     escaped = escaped.replace(
       new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'),
-      (m) => `<mark class="bg-amber-400/30 text-amber-200 rounded-sm">${m}</mark>`
+      (m) => `<mark class="bg-amber-400/30 text-amber-200 dark:text-amber-200 light:text-amber-800 rounded-sm">${m}</mark>`
     );
   }
 
@@ -111,27 +111,31 @@ function clearSearch() {
 </script>
 
 <template>
-  <div class="h-full flex flex-col bg-slate-950 rounded border border-slate-800/80 overflow-hidden font-mono text-xs">
-    <div class="h-8 px-2 bg-slate-900/60 border-b border-slate-800/80 flex items-center justify-between shrink-0">
+  <div class="h-full flex flex-col bg-zinc-950 dark:bg-zinc-950 light:bg-white rounded border border-slate-600/70 dark:border-slate-600/70 light:border-slate-300 overflow-hidden font-mono text-xs">
+    <div class="h-8 px-2 bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-100 border-b border-slate-600/70 dark:border-slate-600/70 light:border-slate-300 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-1">
         <button
           @click="isRaw = false"
           :class="[
             'px-1.5 py-0.5 rounded text-[11px] transition flex items-center space-x-1',
-            !isRaw ? 'bg-slate-800 text-white font-medium' : 'text-slate-400 hover:text-slate-200'
+            !isRaw
+              ? 'bg-slate-800 dark:bg-slate-800 light:bg-white text-white dark:text-white light:text-slate-900 font-medium shadow-sm'
+              : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-slate-200 dark:hover:text-slate-200 light:hover:text-slate-900'
           ]"
         >
-          <Code2 class="w-3 h-3 text-indigo-400" />
+          <Code2 class="w-3 h-3 text-indigo-400 dark:text-indigo-400 light:text-indigo-600" />
           <span>JSON</span>
         </button>
         <button
           @click="isRaw = true"
           :class="[
             'px-1.5 py-0.5 rounded text-[11px] transition flex items-center space-x-1',
-            isRaw ? 'bg-slate-800 text-white font-medium' : 'text-slate-400 hover:text-slate-200'
+            isRaw
+              ? 'bg-slate-800 dark:bg-slate-800 light:bg-white text-white dark:text-white light:text-slate-900 font-medium shadow-sm'
+              : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-slate-200 dark:hover:text-slate-200 light:hover:text-slate-900'
           ]"
         >
-          <AlignLeft class="w-3 h-3 text-indigo-400" />
+          <AlignLeft class="w-3 h-3 text-indigo-400 dark:text-indigo-400 light:text-indigo-600" />
           <span>Raw</span>
         </button>
       </div>
@@ -143,28 +147,28 @@ function clearSearch() {
             v-model="searchQuery"
             type="text"
             placeholder="Filter payload keys..."
-            class="bg-slate-900 border border-slate-800 rounded pl-6 pr-6 py-0.5 text-[11px] text-slate-300 placeholder-slate-600 focus:outline-none focus:border-slate-600 w-44 transition"
+            class="bg-slate-900 dark:bg-slate-900 light:bg-white border border-slate-800 dark:border-slate-800 light:border-slate-300 rounded pl-6 pr-6 py-0.5 text-[11px] text-slate-300 dark:text-slate-300 light:text-slate-800 placeholder-slate-500 focus:outline-none focus:border-slate-600 dark:focus:border-slate-600 light:focus:border-slate-400 w-44 transition"
           />
           <button
             v-if="searchQuery"
             @click="clearSearch"
-            class="absolute right-1.5 text-slate-500 hover:text-slate-300"
+            class="absolute right-1.5 text-slate-500 hover:text-slate-300 dark:hover:text-slate-300 light:hover:text-slate-700"
           >
             <X class="w-3 h-3" />
           </button>
         </div>
 
-        <span v-if="searchQuery.trim()" class="text-[10px] text-slate-500">
-          <span :class="matchCount > 0 ? 'text-amber-400' : 'text-rose-400'">
+        <span v-if="searchQuery.trim()" class="text-[10px] text-slate-500 dark:text-slate-500 light:text-slate-600">
+          <span :class="matchCount > 0 ? 'text-amber-500 dark:text-amber-400' : 'text-rose-500 dark:text-rose-400'">
             {{ matchCount }}
           </span> matches
         </span>
 
-        <span v-else class="text-[10px] text-slate-600">{{ lines.length }} lines</span>
+        <span v-else class="text-[10px] text-slate-600 dark:text-slate-600 light:text-slate-500">{{ lines.length }} lines</span>
 
         <button
           @click="copyJson"
-          class="px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 transition flex items-center space-x-1 border border-slate-800 text-[11px]"
+          class="px-2 py-0.5 rounded bg-slate-900 dark:bg-slate-900 light:bg-white hover:bg-slate-800 dark:hover:bg-slate-800 light:hover:bg-slate-200 text-slate-300 dark:text-slate-300 light:text-slate-700 transition flex items-center space-x-1 border border-slate-800 dark:border-slate-800 light:border-slate-300 text-[11px]"
         >
           <Check v-if="copied" class="w-3 h-3 text-emerald-400" />
           <Copy v-else class="w-3 h-3" />
@@ -184,30 +188,30 @@ function clearSearch() {
             :key="idx"
             :class="[
               'table-row',
-              item.isMatch ? 'bg-amber-500/8' : 'hover:bg-slate-900/30'
+              item.isMatch ? 'bg-amber-500/10' : 'hover:bg-slate-900/30 dark:hover:bg-slate-900/30 light:hover:bg-slate-100'
             ]"
           >
             <span
               :class="[
                 'table-cell select-none pr-3 text-right font-mono text-[10px] w-8 sticky left-0',
-                item.isMatch ? 'text-amber-500' : 'text-slate-700'
+                item.isMatch ? 'text-amber-500 font-bold' : 'text-slate-600 dark:text-slate-700 light:text-slate-400'
               ]"
             >
               {{ idx + 1 }}
             </span>
             <span
               v-html="item.html"
-              class="table-cell font-mono text-slate-300 whitespace-pre"
+              class="table-cell font-mono text-slate-300 dark:text-slate-300 light:text-slate-800 whitespace-pre"
             ></span>
           </div>
         </div>
-        <pre v-else class="font-mono text-slate-300 whitespace-pre-wrap break-all p-2">{{ jsonString }}</pre>
+        <pre v-else class="font-mono text-slate-300 dark:text-slate-300 light:text-slate-800 whitespace-pre-wrap break-all p-2">{{ jsonString }}</pre>
       </div>
 
       <div
         v-if="!isRaw && lines.length > 30"
         ref="minimapEl"
-        class="w-10 shrink-0 border-l border-slate-800/60 bg-slate-950/80 overflow-hidden relative cursor-default"
+        class="w-10 shrink-0 border-l border-slate-800/60 dark:border-slate-800/60 light:border-slate-200 bg-zinc-950/80 dark:bg-zinc-950/80 light:bg-slate-50 overflow-hidden relative cursor-default"
         title="Minimap"
       >
         <div class="absolute inset-0 flex flex-col pt-0.5">
@@ -223,7 +227,7 @@ function clearSearch() {
                 'rounded-sm',
                 ml.isMatch
                   ? 'bg-amber-400 h-[2px]'
-                  : 'bg-slate-700/60 h-[1px]'
+                  : 'bg-slate-700/60 dark:bg-slate-700/60 light:bg-slate-300 h-[1px]'
               ]"
               :style="{ width: ml.isMatch ? '28px' : Math.min(24 - ml.depth * 2, 20) + 'px' }"
             ></div>

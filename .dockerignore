@@ -1,0 +1,8 @@
+node_modules
+data
+*.log
+.git
+.DS_Store
+apps/web/dist
+apps/api/dist
+packages/shared-types/dist
