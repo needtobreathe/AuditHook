@@ -23,7 +23,6 @@ External webhook deliveries are a black box. When a payment fails at 2 AM you ha
 - **JSON inspector** — syntax highlight, line numbers, filter-by-key search, minimap for long payloads, raw / formatted toggle, one-click copy
 - **Pagination** — paginated feed list (25, 50, 100 items per page) with instant switching
 - **Export** — single event JSON download and complete event log batch export
-- **Dark / Light mode** — theme switcher with persistent storage across sessions
 - **In-App Documentation** — `/docs` interactive technical guide with pure inline SVG architecture and layout diagrams (zero PNG dependency)
 - **Replay engine** — forward any stored event to any target URL, captures response status, body and headers
 - **Attempt history** — every dispatch attempt logged with status code, latency and timestamp
@@ -73,7 +72,7 @@ External webhook deliveries are a black box. When a payment fails at 2 AM you ha
 | Database | `node:sqlite` (WAL) | Zero-install, ACID, embedded — no daemon required |
 | Real-time | Server-Sent Events | Unidirectional, reconnects automatically, works through proxies |
 | Frontend | Vue 3 + Vue Router | Composition API, client-side routing (`/` and `/docs`) |
-| Styling | Tailwind CSS + JetBrains Mono | Dark & light workbench themes, monospace density |
+| Styling | Tailwind CSS + JetBrains Mono | Dark workbench aesthetic, monospace data density |
 | Build | Vite + vue-tsc | Sub-2s production builds, strict type checking |
 | Monorepo | npm workspaces | `packages/shared-types` shared between API and web |
 
@@ -108,8 +107,7 @@ AuditHook/
 │           │   ├── WorkbenchPage.vue
 │           │   └── DocsPage.vue   Pure SVG technical documentation
 │           ├── composables/
-│           │   ├── useTelemetry.ts  SSE connection, reactive state
-│           │   └── useTheme.ts      Dark/light mode state manager
+│           │   └── useTelemetry.ts  SSE connection, reactive state
 │           └── components/
 │               ├── AuditHookLogo.vue
 │               ├── HeaderBar.vue

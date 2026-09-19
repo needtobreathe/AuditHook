@@ -3,10 +3,8 @@ import { ref, onMounted } from 'vue';
 import HeaderBar from './components/HeaderBar.vue';
 import NewEndpointModal from './components/NewEndpointModal.vue';
 import { useTelemetry } from './composables/useTelemetry';
-import { useTheme } from './composables/useTheme';
 
 const isCreateModalOpen = ref(false);
-const { initTheme } = useTheme();
 
 const {
   isConnected,
@@ -21,7 +19,8 @@ const {
 } = useTelemetry();
 
 onMounted(async () => {
-  initTheme();
+  document.documentElement.classList.add('dark');
+  document.documentElement.classList.remove('light');
   await fetchEndpoints();
   await fetchEvents();
   connectSse();
@@ -34,7 +33,7 @@ async function handleCreateEndpoint(data: { id?: string; name: string; targetUrl
 </script>
 
 <template>
-  <div class="min-h-screen bg-zinc-950 dark:bg-zinc-950 light:bg-slate-50 text-slate-100 dark:text-slate-100 light:text-slate-900 flex flex-col font-sans overflow-hidden">
+  <div class="min-h-screen bg-zinc-950 text-slate-100 flex flex-col font-sans overflow-hidden">
     <HeaderBar
       :endpoints="endpoints"
       :active-endpoint-id="activeEndpointId"

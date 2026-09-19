@@ -4,12 +4,8 @@
 
 @layer base {
   body {
-    @apply bg-zinc-950 text-slate-100 transition-colors duration-150;
+    @apply bg-zinc-950 text-slate-100;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  }
-
-  html.light body {
-    @apply bg-slate-50 text-slate-900;
   }
 
   ::-webkit-scrollbar {
@@ -21,25 +17,13 @@
     background: #090d16;
   }
 
-  html.light ::-webkit-scrollbar-track {
-    background: #f1f5f9;
-  }
-
   ::-webkit-scrollbar-thumb {
     background: #334155;
     border-radius: 3px;
   }
 
-  html.light ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-  }
-
   ::-webkit-scrollbar-thumb:hover {
     background: #475569;
-  }
-
-  html.light ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
   }
 }
 
