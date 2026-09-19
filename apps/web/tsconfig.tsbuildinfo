@@ -1,0 +1,1 @@
+{"root":["./src/main.ts","./src/composables/usetelemetry.ts","./src/app.vue","./src/components/audithooklogo.vue","./src/components/deliveryterminal.vue","./src/components/feedlist.vue","./src/components/headerbar.vue","./src/components/inspector.vue","./src/components/jsonview.vue","./src/components/newendpointmodal.vue"],"version":"5.9.3"}
